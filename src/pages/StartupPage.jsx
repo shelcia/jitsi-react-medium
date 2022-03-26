@@ -7,16 +7,23 @@ import {
   Snackbar,
 } from "@material-ui/core";
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { useHistory } from "react-router-dom";
 import { MeetContext } from "../context/MeetContext";
 import MuiAlert from "@material-ui/lab/Alert";
-import randomstring from "randomstring";
+import { generateString } from "../helper/generateRandomString";
 
 // Alert when the user hasn't filled up their name
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
+
+const AlertBar = ({ open, handleClose }) => (
+  <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+    <Alert onClose={handleClose} severity="error">
+      Enter your name please!
+    </Alert>
+  </Snackbar>
+);
 
 // stylings for the page
 const useStyles = makeStyles(() => ({
@@ -46,20 +53,20 @@ const StartupPage = () => {
   const classes = useStyles();
 
   // we will be preferring dark theme for our page
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-
   const theme = React.useMemo(
     () =>
       createTheme({
         palette: {
-          type: prefersDarkMode ? "dark" : "light",
+          type: "dark",
         },
       }),
-    [prefersDarkMode]
+    []
   );
 
+  // we will use this to navigate next page
   const history = useHistory();
 
+  // will be using name across all pages from context
   const [name, setName] = useContext(MeetContext);
 
   // state and handler function for the snackbar
@@ -76,20 +83,12 @@ const StartupPage = () => {
     setOpen(false);
   };
 
-  // generating random alphabetic string for our room
-  const returnRoomName = () => {
-    return randomstring.generate({
-      length: 12,
-      charset: "alphabetic",
-    });
-  };
-
   return (
     <div className={classes.background}>
       <Paper className={classes.card} elevation={4}>
-        <h4 className="text-white">Jitsi Demo</h4>
+        <h4>Jitsi Medium Demo</h4>
         <ThemeProvider theme={theme}>
-          <div className="mb-3">
+          <div style={{ marginBottom: "1.5rem" }}>
             <TextField
               label="Name"
               variant="outlined"
@@ -99,7 +98,7 @@ const StartupPage = () => {
               onChange={(e) => setName(e.target.value)}
             />
           </div>
-          <div className="mb-3 text-center">
+          <div style={{ marginBottom: "1.5rem", textAlign: "center" }}>
             <Button
               variant="contained"
               color="default"
@@ -111,7 +110,7 @@ const StartupPage = () => {
                 }
 
                 // if all goes well we will be redirecting the user to meet room
-                history.push(`/meet/${returnRoomName}`);
+                history.push(`/meet/${generateString(7)}`);
               }}
             >
               Create Meet
@@ -119,11 +118,7 @@ const StartupPage = () => {
           </div>
         </ThemeProvider>
       </Paper>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="error">
-          Enter your name please!
-        </Alert>
-      </Snackbar>
+      <AlertBar open={open} handleClose={handleClose} />
     </div>
   );
 };

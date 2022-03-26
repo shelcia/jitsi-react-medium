@@ -5,8 +5,6 @@ import MeetPage from "./pages/MeetPage";
 import StartupPage from "./pages/StartupPage";
 import ThankYou from "./pages/ThankYouPage";
 
-import "./styles/bootstrap-grid.css";
-import "./styles/bootstrap-utils.css";
 import "./styles/custom.css";
 
 const App = () => {
